@@ -1,6 +1,11 @@
 
 import { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import { FaUser } from "react-icons/fa"
+import { registrar, reset } from "../features/auth/authSlice"
+import Spinner from "../components/Spinner"
 
 export const Register = () => {
 
@@ -13,6 +18,11 @@ export const Register = () => {
 
   const { name, email, password, password2 } = formData
 
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const { user, isLoading, isError, isSucces, message } = useSelector((state) => state.auth)
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -22,10 +32,35 @@ export const Register = () => {
 
   const onSubmit = (e) => {
     e.preventDefault()
-
-    // TODO: 
-
+    if (password !== password2) {
+      toast.error('Los passwords no coinciden')
+    } else {
+      const userData = {
+        name,
+        email,
+        password
+      }
+      dispatch(registrar(userData))
+    }
   }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+    if (isSucces || user) {
+      navigate('./login')
+    }
+    dispatch(reset())
+
+
+
+  }, [user, isError, isSucces, message, dispatch, navigate])
+
+  if (isLoading) {
+    return <Spinner />
+  }
+
 
   return (
     <>
