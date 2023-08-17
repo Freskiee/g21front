@@ -44,6 +44,8 @@ export const Login = () => {
         }
         if (isSucces || user) {
             navigate('/')
+        } else {
+            navigate('/login')
         }
         dispatch(reset())
 
